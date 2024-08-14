@@ -9,6 +9,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GroomComponent.h"
+#include "Items/Item.h"
+#include "Items/Weapons/Weapon.h"
 
 ASlashCharacter::ASlashCharacter()
 {
@@ -65,6 +67,7 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Move);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Look);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Jump);
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Interact);
 	}
 }
 
@@ -100,5 +103,13 @@ void ASlashCharacter::Jump()
 	if constexpr (true)
 	{
 		Super::Jump();
+	}
+}
+
+void ASlashCharacter::Interact()
+{
+	if (const AWeapon* OverlappingWeapon = Cast<AWeapon>(OverlappingItem))
+	{
+		OverlappingWeapon->Equip(GetMesh(), FName("hand_rSocket"));
 	}
 }

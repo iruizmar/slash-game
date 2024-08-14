@@ -14,20 +14,6 @@ class SLASH_API AWeapon : public AItem
 {
 	GENERATED_BODY()
 
-protected:
-	virtual void OnSphereOverlapBegin(
-		UPrimitiveComponent* OverlappedComponent,
-		AActor* OtherActor,
-		UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex,
-		bool bFromSweep,
-		const FHitResult& SweepResult
-	) override;
-
-	virtual void OnSphereOverlapEnd(
-		UPrimitiveComponent* OverlappedComponent,
-		AActor* OtherActor,
-		UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex
-	) override;
+public:
+	void Equip(USceneComponent* InParent, FName InSocketName) const;
 };

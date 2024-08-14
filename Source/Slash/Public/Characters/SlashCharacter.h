@@ -6,12 +6,20 @@
 #include "GameFramework/Character.h"
 #include "SlashCharacter.generated.h"
 
+class AItem;
 class UCameraComponent;
 class USpringArmComponent;
 struct FInputActionValue;
 class UInputAction;
 class UInputMappingContext;
 class UGroomComponent;
+
+UENUM(BlueprintType)
+enum class ECharacterWeaponState: uint8
+{
+	ECWS_Unequipped UMETA(DisplayName = "Unequipped"),
+	ECWS_OneHandWeapon UMETA(DisplayName = "One hand weapon"),
+};
 
 UCLASS()
 class SLASH_API ASlashCharacter : public ACharacter
@@ -44,11 +52,17 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* JumpAction = nullptr;
 
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* InteractAction = nullptr;
+
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	virtual void Jump() override;
+	void Interact();
 
 private:
+	ECharacterWeaponState State = ECharacterWeaponState::ECWS_Unequipped;
+
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArm = nullptr;
 
@@ -60,4 +74,10 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = Hair)
 	UGroomComponent* Eyebrows = nullptr;
+
+	UPROPERTY(VisibleInstanceOnly)
+	AItem* OverlappingItem;
+
+public:
+	void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }
 };

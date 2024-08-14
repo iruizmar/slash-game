@@ -3,6 +3,7 @@
 
 #include "Items/Item.h"
 
+#include "Characters/SlashCharacter.h"
 #include "Components/SphereComponent.h"
 
 AItem::AItem()
@@ -55,10 +56,9 @@ void AItem::OnSphereOverlapBegin(
 	const FHitResult& SweepResult
 )
 {
-	if (GEngine)
+	if (ASlashCharacter* Character = Cast<ASlashCharacter>(OtherActor))
 	{
-		GEngine->AddOnScreenDebugMessage(1, 30.f, FColor::Red,
-		                                 FString::Printf(TEXT("%1s overlap start"), *OtherActor->GetName()));
+		Character->SetOverlappingItem(this);
 	}
 }
 
@@ -69,10 +69,8 @@ void AItem::OnSphereOverlapEnd(
 	int32 OtherBodyIndex
 )
 {
-	const FString OtherActorName = OtherActor->GetName();
-	if (GEngine)
+	if (ASlashCharacter* Character = Cast<ASlashCharacter>(OtherActor))
 	{
-		GEngine->AddOnScreenDebugMessage(1, 30.f, FColor::Red,
-		                                 FString::Printf(TEXT("%1s overlap end"), *OtherActor->GetName()));
+		Character->SetOverlappingItem(nullptr);
 	}
 }

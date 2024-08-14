@@ -47,10 +47,10 @@ protected:
 		int32 OtherBodyIndex
 	);
 
-private:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* ItemMesh;
 
+private:
 	UPROPERTY(VisibleAnywhere)
 	USphereComponent* Sphere;
 

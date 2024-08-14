@@ -3,40 +3,76 @@
 
 #include "Items/Item.h"
 
-#include "Slash/DebugMacros.h"
+#include "Components/SphereComponent.h"
 
-AItem::AItem() : VerticalAmplitude(0.25f), TimeConstant(5.f), RunningTime(0.f)
+AItem::AItem()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
 	ItemMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ItemMeshComponent"));
 	RootComponent = ItemMesh;
+
+	Sphere = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere"));
+	Sphere->SetupAttachment(GetRootComponent());
 }
 
 void AItem::BeginPlay()
 {
 	Super::BeginPlay();
+	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnSphereOverlapBegin);
+	Sphere->OnComponentEndOverlap.AddDynamic(this, &AItem::OnSphereOverlapEnd);
 }
 
-float AItem::GetTransformedSine(const float Value) const
-{
-	return VerticalAmplitude * FMath::Sin(Value * TimeConstant);
-}
-
-float AItem::GetTransformedCosine(float Value) const
-{
-	return VerticalAmplitude * FMath::Cos(Value * TimeConstant);
-}
-
-void AItem::Tick(float DeltaTime)
+void AItem::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	RunningTime += DeltaTime;
+	Float();
+}
+
+void AItem::Float()
+{
+	if (!FloatingIsEnabled)
+	{
+		return;
+	}
+	const float ZOffset = FloatingAmplitude * FMath::Sin(GetGameTimeSinceCreation() * FloatingFrequency);
+	AddActorWorldOffset(FVector(0.f, 0.f, ZOffset));
 }
 
 template <typename T>
 T AItem::Avg(T First, T Second)
 {
 	return (First + Second) / 2;
+}
+
+void AItem::OnSphereOverlapBegin(
+	UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult& SweepResult
+)
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(1, 30.f, FColor::Red,
+		                                 FString::Printf(TEXT("%1s overlap start"), *OtherActor->GetName()));
+	}
+}
+
+void AItem::OnSphereOverlapEnd(
+	UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex
+)
+{
+	const FString OtherActorName = OtherActor->GetName();
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(1, 30.f, FColor::Red,
+		                                 FString::Printf(TEXT("%1s overlap end"), *OtherActor->GetName()));
+	}
 }

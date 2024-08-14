@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Item.generated.h"
 
+class USphereComponent;
+
 UCLASS()
 class SLASH_API AItem : public AActor
 {
@@ -18,25 +20,41 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sine parameters")
-	float VerticalAmplitude;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Floating movement")
+	float FloatingAmplitude = 0.5f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sine parameters")
-	float TimeConstant;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Floating movement")
+	bool FloatingIsEnabled = true;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Sine parameters")
-	float RunningTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Floating movement")
+	float FloatingFrequency = 2.5f;
 
-	UFUNCTION(BlueprintPure)
-	float GetTransformedSine(float Value) const;
+	UFUNCTION()
+	virtual void OnSphereOverlapBegin(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex,
+		bool bFromSweep,
+		const FHitResult& SweepResult
+	);
 
-	UFUNCTION(BlueprintPure)
-	float GetTransformedCosine(float Value) const;
-
-	template <typename T>
-	static T Avg(T First, T Second);
+	UFUNCTION()
+	virtual void OnSphereOverlapEnd(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex
+	);
 
 private:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* ItemMesh;
+
+	UPROPERTY(VisibleAnywhere)
+	USphereComponent* Sphere;
+
+	void Float();
+	template <typename T>
+	static T Avg(T First, T Second);
 };

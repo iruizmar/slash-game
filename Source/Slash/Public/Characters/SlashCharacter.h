@@ -11,6 +11,7 @@ class USpringArmComponent;
 struct FInputActionValue;
 class UInputAction;
 class UInputMappingContext;
+class UGroomComponent;
 
 UCLASS()
 class SLASH_API ASlashCharacter : public ACharacter
@@ -49,8 +50,14 @@ protected:
 
 private:
 	UPROPERTY(VisibleAnywhere)
-	USpringArmComponent* SpringArm;
+	USpringArmComponent* SpringArm = nullptr;
 
 	UPROPERTY(VisibleAnywhere)
-	UCameraComponent* ViewCamera;
+	UCameraComponent* ViewCamera = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = Hair)
+	UGroomComponent* Hair = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = Hair)
+	UGroomComponent* Eyebrows = nullptr;
 };

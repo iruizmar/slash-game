@@ -117,17 +117,36 @@ void ASlashCharacter::Interact()
 
 void ASlashCharacter::Attack()
 {
+	if (ActionState != ECharacterActionState::ECAS_Unoccupied || WeaponState == ECharacterWeaponState::ECWS_Unequipped)
+	{
+		return;
+	}
+	PlayAttackMontage();
+	UE_LOG(LogTemp, Warning, TEXT("Attacking"));
+	ActionState = ECharacterActionState::ECAS_Attacking;
+}
+
+void ASlashCharacter::PlayAttackMontage()
+{
 	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance(); AnimInstance && AttackMontage)
 	{
+		FName SectionName = FName();
 		AnimInstance->Montage_Play(AttackMontage);
 		switch (FMath::RandRange(0, 1))
 		{
 		case 0:
-			AnimInstance->Montage_JumpToSection(FName("Attack1"));
+			SectionName = FName("Attack1");
 			break;
 		default:
-			AnimInstance->Montage_JumpToSection(FName("Attack2"));
+			SectionName = FName("Attack2");
 			break;
 		}
+		AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
 	}
+}
+
+void ASlashCharacter::AttackEnd()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Stopped attacking"));
+	ActionState = ECharacterActionState::ECAS_Unoccupied;
 }

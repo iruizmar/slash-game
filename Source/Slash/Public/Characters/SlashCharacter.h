@@ -34,22 +34,22 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere, Category = Input)
+	UPROPERTY(EditDefaultsOnly, Category = Input)
 	UInputMappingContext* MappingContext = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = Input)
+	UPROPERTY(EditDefaultsOnly, Category = Input)
 	UInputAction* MoveAction = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = Input)
+	UPROPERTY(EditDefaultsOnly, Category = Input)
 	UInputAction* LookAction = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = Input)
+	UPROPERTY(EditDefaultsOnly, Category = Input)
 	UInputAction* JumpAction = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = Input)
+	UPROPERTY(EditDefaultsOnly, Category = Input)
 	UInputAction* InteractAction = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = Input)
+	UPROPERTY(EditDefaultsOnly, Category = Input)
 	UInputAction* AttackAction = nullptr;
 
 	void Move(const FInputActionValue& Value);
@@ -58,12 +58,15 @@ protected:
 	void Interact();
 	void Attack();
 
-	//section Animation Montages
+	//section Animation montages
 	UPROPERTY(EditDefaultsOnly, Category = Movement)
 	UAnimMontage* AttackMontage = nullptr;
 
 private:
+	UPROPERTY(VisibleInstanceOnly, Category = State)
 	ECharacterWeaponState WeaponState = ECharacterWeaponState::ECWS_Unequipped;
+	UPROPERTY(VisibleInstanceOnly, Category = State)
+	ECharacterActionState ActionState = ECharacterActionState::ECAS_Unoccupied;
 
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArm = nullptr;
@@ -79,6 +82,12 @@ private:
 
 	UPROPERTY(VisibleInstanceOnly)
 	AItem* OverlappingItem;
+
+	//section Play montage functions
+	void PlayAttackMontage();
+
+	UFUNCTION(BlueprintCallable)
+	void AttackEnd();
 
 public:
 	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }

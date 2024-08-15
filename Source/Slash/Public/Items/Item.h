@@ -8,6 +8,12 @@
 
 class USphereComponent;
 
+enum class EItemState: uint8
+{
+	EIS_Floating,
+	EIS_Equiped,
+};
+
 UCLASS()
 class SLASH_API AItem : public AActor
 {
@@ -18,6 +24,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 protected:
+	EItemState State = EItemState::EIS_Floating;
+
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Floating movement")
@@ -55,6 +63,4 @@ private:
 	USphereComponent* Sphere;
 
 	void Float();
-	template <typename T>
-	static T Avg(T First, T Second);
 };

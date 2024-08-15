@@ -74,6 +74,7 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 void ASlashCharacter::Move(const FInputActionValue& Value)
 {
+	if (ActionState == ECharacterActionState::ECAS_Attacking) { return; }
 	const FVector2d MovementVector = Value.Get<FVector2d>();
 
 	const FRotator Rotation = Controller->GetControlRotation();
@@ -122,7 +123,6 @@ void ASlashCharacter::Attack()
 		return;
 	}
 	PlayAttackMontage();
-	UE_LOG(LogTemp, Warning, TEXT("Attacking"));
 	ActionState = ECharacterActionState::ECAS_Attacking;
 }
 
@@ -130,7 +130,7 @@ void ASlashCharacter::PlayAttackMontage()
 {
 	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance(); AnimInstance && AttackMontage)
 	{
-		FName SectionName = FName();
+		FName SectionName;
 		AnimInstance->Montage_Play(AttackMontage);
 		switch (FMath::RandRange(0, 1))
 		{
@@ -147,6 +147,5 @@ void ASlashCharacter::PlayAttackMontage()
 
 void ASlashCharacter::AttackEnd()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Stopped attacking"));
 	ActionState = ECharacterActionState::ECAS_Unoccupied;
 }

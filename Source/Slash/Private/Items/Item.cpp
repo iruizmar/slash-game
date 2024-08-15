@@ -33,18 +33,12 @@ void AItem::Tick(const float DeltaTime)
 
 void AItem::Float()
 {
-	if (!FloatingIsEnabled)
+	if (!FloatingIsEnabled || State != EItemState::EIS_Floating)
 	{
 		return;
 	}
 	const float ZOffset = FloatingAmplitude * FMath::Sin(GetGameTimeSinceCreation() * FloatingFrequency);
 	AddActorWorldOffset(FVector(0.f, 0.f, ZOffset));
-}
-
-template <typename T>
-T AItem::Avg(T First, T Second)
-{
-	return (First + Second) / 2;
 }
 
 void AItem::OnSphereOverlapBegin(

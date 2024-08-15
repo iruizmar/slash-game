@@ -69,12 +69,14 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Jump);
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Interact);
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Attack);
+		EnhancedInputComponent->BindAction(ToggleWeaponAction, ETriggerEvent::Triggered, this,
+		                                   &ASlashCharacter::ToggleWeapon);
 	}
 }
 
 void ASlashCharacter::Move(const FInputActionValue& Value)
 {
-	if (ActionState == ECharacterActionState::ECAS_Attacking) { return; }
+	if (ActionState != ECharacterActionState::ECAS_Unoccupied) { return; }
 	const FVector2d MovementVector = Value.Get<FVector2d>();
 
 	const FRotator Rotation = Controller->GetControlRotation();
@@ -113,6 +115,8 @@ void ASlashCharacter::Interact()
 	{
 		OverlappingWeapon->Equip(GetMesh(), FName("hand_rSocket"));
 		WeaponState = ECharacterWeaponState::ECWS_OneHandedWeapon;
+		EquippedWeapon = OverlappingWeapon;
+		OverlappingItem = nullptr;
 	}
 }
 
@@ -123,10 +127,28 @@ void ASlashCharacter::Attack()
 		return;
 	}
 	PlayAttackMontage();
+	UE_LOG(LogTemp, Warning, TEXT("Attack start"));
 	ActionState = ECharacterActionState::ECAS_Attacking;
 }
 
-void ASlashCharacter::PlayAttackMontage()
+void ASlashCharacter::ToggleWeapon()
+{
+	if (ActionState != ECharacterActionState::ECAS_Unoccupied || !EquippedWeapon) { return; }
+	ActionState = ECharacterActionState::ECAS_SheathingOrUnSheathing;
+	switch (WeaponState)
+	{
+	case ECharacterWeaponState::ECWS_OneHandedWeapon:
+		WeaponState = ECharacterWeaponState::ECWS_Unequipped;
+		PlaySheatheUnsheatheMontage(FName("Sheathe"));
+		break;
+	default:
+		WeaponState = ECharacterWeaponState::ECWS_OneHandedWeapon;
+		PlaySheatheUnsheatheMontage(FName("Unsheathe"));
+		break;
+	}
+}
+
+void ASlashCharacter::PlayAttackMontage() const
 {
 	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance(); AnimInstance && AttackMontage)
 	{
@@ -145,7 +167,22 @@ void ASlashCharacter::PlayAttackMontage()
 	}
 }
 
+void ASlashCharacter::PlaySheatheUnsheatheMontage(const FName SectionName) const
+{
+	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance(); AnimInstance && SheatheUnsheatheMontage)
+	{
+		AnimInstance->Montage_Play(SheatheUnsheatheMontage);
+		AnimInstance->Montage_JumpToSection(SectionName, SheatheUnsheatheMontage);
+	}
+}
+
 void ASlashCharacter::AttackEnd()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Attack end"));
+	ActionState = ECharacterActionState::ECAS_Unoccupied;
+}
+
+void ASlashCharacter::SheatheUnsheatheEnd()
 {
 	ActionState = ECharacterActionState::ECAS_Unoccupied;
 }

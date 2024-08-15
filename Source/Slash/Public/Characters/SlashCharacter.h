@@ -7,6 +7,7 @@
 #include "GameFramework/Character.h"
 #include "SlashCharacter.generated.h"
 
+class AWeapon;
 class AItem;
 class UCameraComponent;
 class USpringArmComponent;
@@ -34,6 +35,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	//section Input
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	UInputMappingContext* MappingContext = nullptr;
 
@@ -52,15 +54,22 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	UInputAction* AttackAction = nullptr;
 
+	UPROPERTY(EditDefaultsOnly, Category = Input)
+	UInputAction* ToggleWeaponAction = nullptr;
+
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	virtual void Jump() override;
 	void Interact();
 	void Attack();
+	void ToggleWeapon();
 
 	//section Animation montages
-	UPROPERTY(EditDefaultsOnly, Category = Movement)
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* AttackMontage = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	UAnimMontage* SheatheUnsheatheMontage = nullptr;
 
 private:
 	UPROPERTY(VisibleInstanceOnly, Category = State)
@@ -81,13 +90,19 @@ private:
 	UGroomComponent* Eyebrows = nullptr;
 
 	UPROPERTY(VisibleInstanceOnly)
-	AItem* OverlappingItem;
+	AItem* OverlappingItem = nullptr;
+
+	UPROPERTY(VisibleInstanceOnly)
+	AWeapon* EquippedWeapon = nullptr;
 
 	//section Play montage functions
-	void PlayAttackMontage();
+	void PlayAttackMontage() const;
+	void PlaySheatheUnsheatheMontage(FName SectionName) const;
 
 	UFUNCTION(BlueprintCallable)
 	void AttackEnd();
+	UFUNCTION(BlueprintCallable)
+	void SheatheUnsheatheEnd();
 
 public:
 	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }

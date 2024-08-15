@@ -13,4 +13,5 @@ enum class ECharacterActionState: uint8
 {
 	ECAS_Unoccupied UMETA(DisplayName = "Unoccupied"),
 	ECAS_Attacking UMETA(DisplayName = "Attacking"),
+	ECAS_SheathingOrUnSheathing UMETA(DisplayName = "Toggling weapon"),
 };

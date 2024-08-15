@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CharacterTypes.h"
 #include "GameFramework/Character.h"
 #include "SlashCharacter.generated.h"
 
@@ -13,13 +14,6 @@ struct FInputActionValue;
 class UInputAction;
 class UInputMappingContext;
 class UGroomComponent;
-
-UENUM(BlueprintType)
-enum class ECharacterWeaponState: uint8
-{
-	ECWS_Unequipped UMETA(DisplayName = "Unequipped"),
-	ECWS_OneHandWeapon UMETA(DisplayName = "One hand weapon"),
-};
 
 UCLASS()
 class SLASH_API ASlashCharacter : public ACharacter
@@ -61,7 +55,7 @@ protected:
 	void Interact();
 
 private:
-	ECharacterWeaponState State = ECharacterWeaponState::ECWS_Unequipped;
+	ECharacterWeaponState WeaponState = ECharacterWeaponState::ECWS_Unequipped;
 
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArm = nullptr;
@@ -79,5 +73,6 @@ private:
 	AItem* OverlappingItem;
 
 public:
-	void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }
+	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }
+	FORCEINLINE ECharacterWeaponState GetCharacterWeaponState() const { return WeaponState; }
 };

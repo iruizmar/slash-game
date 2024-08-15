@@ -108,8 +108,9 @@ void ASlashCharacter::Jump()
 
 void ASlashCharacter::Interact()
 {
-	if (const AWeapon* OverlappingWeapon = Cast<AWeapon>(OverlappingItem))
+	if (AWeapon* OverlappingWeapon = Cast<AWeapon>(OverlappingItem))
 	{
 		OverlappingWeapon->Equip(GetMesh(), FName("hand_rSocket"));
+		WeaponState = ECharacterWeaponState::ECWS_OneHandWeapon;
 	}
 }

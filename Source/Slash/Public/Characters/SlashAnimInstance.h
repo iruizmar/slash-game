@@ -3,14 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CharacterTypes.h"
 #include "Animation/AnimInstance.h"
 #include "SlashAnimInstance.generated.h"
 
 class UCharacterMovementComponent;
 class ASlashCharacter;
-/**
- * 
- */
+
 UCLASS()
 class SLASH_API USlashAnimInstance : public UAnimInstance
 {
@@ -31,4 +30,7 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category=Movement)
 	bool IsFalling = false;
+
+	UPROPERTY(BlueprintReadOnly, Category="Movement | Weapon State")
+	ECharacterWeaponState CharacterWeaponState;
 };

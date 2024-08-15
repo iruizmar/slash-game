@@ -68,6 +68,7 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Look);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Jump);
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Interact);
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Attack);
 	}
 }
 
@@ -99,7 +100,6 @@ void ASlashCharacter::Look(const FInputActionValue& Value)
 
 void ASlashCharacter::Jump()
 {
-	UE_LOG(LogTemp, Warning, TEXT("JUMPING"))
 	if constexpr (true)
 	{
 		Super::Jump();
@@ -111,6 +111,23 @@ void ASlashCharacter::Interact()
 	if (AWeapon* OverlappingWeapon = Cast<AWeapon>(OverlappingItem))
 	{
 		OverlappingWeapon->Equip(GetMesh(), FName("hand_rSocket"));
-		WeaponState = ECharacterWeaponState::ECWS_OneHandWeapon;
+		WeaponState = ECharacterWeaponState::ECWS_OneHandedWeapon;
+	}
+}
+
+void ASlashCharacter::Attack()
+{
+	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance(); AnimInstance && AttackMontage)
+	{
+		AnimInstance->Montage_Play(AttackMontage);
+		switch (FMath::RandRange(0, 1))
+		{
+		case 0:
+			AnimInstance->Montage_JumpToSection(FName("Attack1"));
+			break;
+		default:
+			AnimInstance->Montage_JumpToSection(FName("Attack2"));
+			break;
+		}
 	}
 }

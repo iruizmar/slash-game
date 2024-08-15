@@ -49,10 +49,18 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* InteractAction = nullptr;
 
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* AttackAction = nullptr;
+
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	virtual void Jump() override;
 	void Interact();
+	void Attack();
+
+	//section Animation Montages
+	UPROPERTY(EditDefaultsOnly, Category = Movement)
+	UAnimMontage* AttackMontage = nullptr;
 
 private:
 	ECharacterWeaponState WeaponState = ECharacterWeaponState::ECWS_Unequipped;

@@ -186,3 +186,15 @@ void ASlashCharacter::SheatheUnsheatheEnd()
 {
 	ActionState = ECharacterActionState::ECAS_Unoccupied;
 }
+
+void ASlashCharacter::SheatheWeapon()
+{
+	if (!EquippedWeapon) { return; }
+	EquippedWeapon->AttachMeshToSocket(GetMesh(), FName("spine_05Socket"));
+}
+
+void ASlashCharacter::UnsheatheWeapon()
+{
+	if (!EquippedWeapon) { return; }
+	EquippedWeapon->AttachMeshToSocket(GetMesh(), FName("hand_rSocket"));
+}

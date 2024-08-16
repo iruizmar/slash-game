@@ -103,6 +103,10 @@ private:
 	void AttackEnd();
 	UFUNCTION(BlueprintCallable)
 	void SheatheUnsheatheEnd();
+	UFUNCTION(BlueprintCallable)
+	void SheatheWeapon();
+	UFUNCTION(BlueprintCallable)
+	void UnsheatheWeapon();
 
 public:
 	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }

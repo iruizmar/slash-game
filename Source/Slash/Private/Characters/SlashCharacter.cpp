@@ -178,7 +178,6 @@ void ASlashCharacter::PlaySheatheUnsheatheMontage(const FName SectionName) const
 
 void ASlashCharacter::AttackEnd()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Attack end"));
 	ActionState = ECharacterActionState::ECAS_Unoccupied;
 }
 
@@ -197,4 +196,10 @@ void ASlashCharacter::UnsheatheWeapon()
 {
 	if (!EquippedWeapon) { return; }
 	EquippedWeapon->AttachMeshToSocket(GetMesh(), FName("hand_rSocket"));
+}
+
+void ASlashCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabledType)
+{
+	if (!EquippedWeapon) { return; }
+	EquippedWeapon->SetCollisionEnabledType(CollisionEnabledType);
 }

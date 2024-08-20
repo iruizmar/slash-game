@@ -127,7 +127,6 @@ void ASlashCharacter::Attack()
 		return;
 	}
 	PlayAttackMontage();
-	UE_LOG(LogTemp, Warning, TEXT("Attack start"));
 	ActionState = ECharacterActionState::ECAS_Attacking;
 }
 

@@ -5,6 +5,7 @@
 
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
+#include "Interfaces/Hittable.h"
 #include "Kismet/GameplayStatics.h"
 
 AWeapon::AWeapon()
@@ -79,4 +80,10 @@ void AWeapon::OnCollisionBoxOverlapBegin(
 		HitResult,
 		true
 	);
+
+	//Did we hit a hittable?
+	if (IHittable* Hittable = Cast<IHittable>(HitResult.GetActor()))
+	{
+		Hittable->GetHit(HitResult.ImpactPoint);
+	}
 }

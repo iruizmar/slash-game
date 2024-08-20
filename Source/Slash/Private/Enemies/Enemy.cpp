@@ -4,6 +4,7 @@
 #include "Enemies/Enemy.h"
 
 #include "Components/CapsuleComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 AEnemy::AEnemy()
 {
@@ -33,9 +34,14 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AEnemy::GetHit(const FVector& ImpactPoint)
 {
+	PlayHitAnimation(ImpactPoint);
+	PlayHitSound(ImpactPoint);
+}
+
+void AEnemy::PlayHitAnimation(const FVector& ImpactPoint) const
+{
 	const FVector ToHit = (ImpactPoint - GetActorLocation()).GetSafeNormal();
 	double HitAngle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(GetActorForwardVector(), ToHit)));
-
 
 	const FVector CrossProduct = FVector::CrossProduct(GetActorForwardVector(), ToHit);
 	// If CrossProduct points down, this HitAngle is actually be negative
@@ -60,6 +66,7 @@ void AEnemy::GetHit(const FVector& ImpactPoint)
 	PlayHitReactMontage(HitDirection);
 }
 
+
 void AEnemy::PlayHitReactMontage(const EHitDirection Direction) const
 {
 	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance(); AnimInstance && HitReactMontage)
@@ -83,5 +90,13 @@ void AEnemy::PlayHitReactMontage(const EHitDirection Direction) const
 		}
 		AnimInstance->Montage_Play(HitReactMontage);
 		AnimInstance->Montage_JumpToSection(SectionName, HitReactMontage);
+	}
+}
+
+void AEnemy::PlayHitSound(const FVector& ImpactPoint) const
+{
+	if (HitSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, HitSound, ImpactPoint);
 	}
 }

@@ -31,4 +31,10 @@ protected:
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Montages")
 	UAnimMontage* HitReactMontage;
+
+	UPROPERTY(EditAnywhere, Category="Sound")
+	USoundBase* HitSound;
+
+	void PlayHitSound(const FVector& ImpactPoint) const;
+	void PlayHitAnimation(const FVector& ImpactPoint) const;
 };

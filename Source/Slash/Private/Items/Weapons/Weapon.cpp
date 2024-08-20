@@ -47,10 +47,18 @@ void AWeapon::Equip(USceneComponent* InParent, const FName InSocketName)
 	}
 }
 
-void AWeapon::SetCollisionEnabledType(const ECollisionEnabled::Type InType) const
+void AWeapon::BeginHitting() const
 {
 	if (!CollisionBox) { return; }
-	CollisionBox->SetCollisionEnabled(InType);
+	CollisionBox->SetCollisionEnabled(ECollisionEnabled::Type::QueryOnly);
+}
+
+
+void AWeapon::EndHitting()
+{
+	if (!CollisionBox) { return; }
+	IgnoreActorsOnHit.Empty();
+	CollisionBox->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
 }
 
 void AWeapon::OnCollisionBoxOverlapBegin(
@@ -64,9 +72,6 @@ void AWeapon::OnCollisionBoxOverlapBegin(
 {
 	FHitResult HitResult;
 
-	TArray<AActor*> ActorsToIgnore;
-	ActorsToIgnore.Add(this);
-
 	UKismetSystemLibrary::BoxTraceSingle(
 		this,
 		HitTraceStartPoint->GetComponentLocation(),
@@ -75,7 +80,7 @@ void AWeapon::OnCollisionBoxOverlapBegin(
 		HitTraceStartPoint->GetComponentRotation(),
 		TraceTypeQuery1,
 		false,
-		ActorsToIgnore,
+		IgnoreActorsOnHit,
 		EDrawDebugTrace::ForDuration,
 		HitResult,
 		true
@@ -86,4 +91,5 @@ void AWeapon::OnCollisionBoxOverlapBegin(
 	{
 		Hittable->GetHit(HitResult.ImpactPoint);
 	}
+	IgnoreActorsOnHit.AddUnique(HitResult.GetActor());
 }

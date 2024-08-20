@@ -197,8 +197,14 @@ void ASlashCharacter::UnsheatheWeapon()
 	EquippedWeapon->AttachMeshToSocket(GetMesh(), FName("hand_rSocket"));
 }
 
-void ASlashCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabledType)
+void ASlashCharacter::BeginAttack() const
 {
 	if (!EquippedWeapon) { return; }
-	EquippedWeapon->SetCollisionEnabledType(CollisionEnabledType);
+	EquippedWeapon->BeginHitting();
+}
+
+void ASlashCharacter::EndAttack() const
+{
+	if (!EquippedWeapon) { return; }
+	EquippedWeapon->EndHitting();
 }

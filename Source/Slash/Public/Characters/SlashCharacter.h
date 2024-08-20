@@ -108,7 +108,9 @@ private:
 	UFUNCTION(BlueprintCallable)
 	void UnsheatheWeapon();
 	UFUNCTION(BlueprintCallable)
-	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabledType);
+	void BeginAttack() const;
+	UFUNCTION(BlueprintCallable)
+	void EndAttack() const;
 
 public:
 	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }

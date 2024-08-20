@@ -21,7 +21,8 @@ public:
 	AWeapon();
 	void AttachMeshToSocket(USceneComponent* InParent, FName InSocketName) const;
 	void Equip(USceneComponent* InParent, FName InSocketName);
-	void SetCollisionEnabledType(ECollisionEnabled::Type InType) const;
+	void BeginHitting() const;
+	void EndHitting();
 
 protected:
 	virtual void BeginPlay() override;
@@ -48,4 +49,6 @@ private:
 		bool bFromSweep,
 		const FHitResult& SweepResult
 	);
+
+	TArray<AActor*> IgnoreActorsOnHit;
 };

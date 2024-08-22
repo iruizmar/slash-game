@@ -208,3 +208,15 @@ void ASlashCharacter::EndAttack() const
 	if (!EquippedWeapon) { return; }
 	EquippedWeapon->EndHitting();
 }
+
+void ASlashCharacter::ShowWeaponTrail() const
+{
+	if (!EquippedWeapon) { return; }
+	EquippedWeapon->ShowTrail();
+}
+
+void ASlashCharacter::HideWeaponTrail() const
+{
+	if (!EquippedWeapon) { return; }
+	EquippedWeapon->HideTrail();
+}

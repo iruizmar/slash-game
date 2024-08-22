@@ -23,9 +23,14 @@ public:
 	void Equip(USceneComponent* InParent, FName InSocketName);
 	void BeginHitting() const;
 	void EndHitting();
+	void ShowTrail() const;
+	void HideTrail() const;
 
 protected:
 	virtual void BeginPlay() override;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void CreateFields(const FVector& FieldLocation);
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Weapon")
@@ -38,7 +43,10 @@ private:
 	USceneComponent* HitTraceStartPoint;
 
 	UPROPERTY(VisibleAnywhere)
-	USceneComponent* HitTraceEndPoint;
+	USceneComponent* HitTraceEndPoint = nullptr;
+
+	UPROPERTY(VisibleAnywhere)
+	UParticleSystemComponent* TrailParticleSystem = nullptr;
 
 	UFUNCTION()
 	virtual void OnCollisionBoxOverlapBegin(

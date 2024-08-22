@@ -111,6 +111,10 @@ private:
 	void BeginAttack() const;
 	UFUNCTION(BlueprintCallable)
 	void EndAttack() const;
+	UFUNCTION(BlueprintCallable)
+	void ShowWeaponTrail() const;
+	UFUNCTION(BlueprintCallable)
+	void HideWeaponTrail() const;
 
 public:
 	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }

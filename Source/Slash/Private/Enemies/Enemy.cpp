@@ -32,10 +32,11 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
-void AEnemy::GetHit(const FVector& ImpactPoint)
+void AEnemy::GetHit_Implementation(const FVector& ImpactPoint)
 {
 	PlayHitAnimation(ImpactPoint);
 	PlayHitSound(ImpactPoint);
+	SpawnBloodEmitter(ImpactPoint);
 }
 
 void AEnemy::PlayHitAnimation(const FVector& ImpactPoint) const
@@ -64,6 +65,14 @@ void AEnemy::PlayHitAnimation(const FVector& ImpactPoint) const
 	}
 
 	PlayHitReactMontage(HitDirection);
+}
+
+void AEnemy::SpawnBloodEmitter(const FVector& ImpactPoint) const
+{
+	if (BloodParticle)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(this, BloodParticle, ImpactPoint);
+	}
 }
 
 

@@ -9,7 +9,7 @@ public class Slash : ModuleRules
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
 		PublicDependencyModuleNames.AddRange(new[]
-			{ "Core", "CoreUObject", "Engine", "InputCore", "HairStrandsCore", "Niagara" });
+			{ "Core", "CoreUObject", "Engine", "InputCore", "HairStrandsCore", "Niagara", "GeometryCollectionEngine" });
 
 		PrivateDependencyModuleNames.AddRange(new[] { "EnhancedInput" });
 

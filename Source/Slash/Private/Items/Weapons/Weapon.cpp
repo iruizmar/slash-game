@@ -7,6 +7,7 @@
 #include "Components/SphereComponent.h"
 #include "Interfaces/Hittable.h"
 #include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystemComponent.h"
 
 AWeapon::AWeapon()
 {
@@ -20,6 +21,9 @@ AWeapon::AWeapon()
 	HitTraceStartPoint->SetupAttachment(GetRootComponent());
 	HitTraceEndPoint = CreateDefaultSubobject<USceneComponent>(TEXT("HitTraceEndingPoint"));
 	HitTraceEndPoint->SetupAttachment(GetRootComponent());
+
+	TrailParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("TrailParticleSystem"));
+	TrailParticleSystem->SetupAttachment(GetRootComponent());
 }
 
 void AWeapon::BeginPlay()
@@ -61,6 +65,16 @@ void AWeapon::EndHitting()
 	CollisionBox->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
 }
 
+void AWeapon::ShowTrail() const
+{
+	TrailParticleSystem->BeginTrails(FName("TrailStart"), FName("TrailEnd"), ETrailWidthMode_FromCentre, 1.0f);
+}
+
+void AWeapon::HideTrail() const
+{
+	TrailParticleSystem->EndTrails();
+}
+
 void AWeapon::OnCollisionBoxOverlapBegin(
 	UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor,
@@ -81,15 +95,17 @@ void AWeapon::OnCollisionBoxOverlapBegin(
 		TraceTypeQuery1,
 		false,
 		IgnoreActorsOnHit,
-		EDrawDebugTrace::ForDuration,
+		EDrawDebugTrace::None,
 		HitResult,
 		true
 	);
 
 	//Did we hit a hittable?
-	if (IHittable* Hittable = Cast<IHittable>(HitResult.GetActor()))
+	if (const IHittable* Hittable = Cast<IHittable>(HitResult.GetActor()))
 	{
-		Hittable->GetHit(HitResult.ImpactPoint);
+		Hittable->Execute_GetHit(HitResult.GetActor(), HitResult.ImpactPoint);
 	}
 	IgnoreActorsOnHit.AddUnique(HitResult.GetActor());
+
+	CreateFields(HitResult.ImpactPoint);
 }

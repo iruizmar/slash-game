@@ -16,7 +16,7 @@ public:
 	AEnemy();
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-	virtual void GetHit(const FVector& ImpactPoint) override;
+	virtual void GetHit_Implementation(const FVector& ImpactPoint) override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -30,11 +30,15 @@ protected:
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Montages")
-	UAnimMontage* HitReactMontage;
+	UAnimMontage* HitReactMontage = nullptr;
 
 	UPROPERTY(EditAnywhere, Category="Sound")
-	USoundBase* HitSound;
+	USoundBase* HitSound = nullptr;
+
+	UPROPERTY(EditAnywhere, Category="VFX")
+	UParticleSystem* BloodParticle = nullptr;
 
 	void PlayHitSound(const FVector& ImpactPoint) const;
 	void PlayHitAnimation(const FVector& ImpactPoint) const;
+	void SpawnBloodEmitter(const FVector& ImpactPoint) const;
 };

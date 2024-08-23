@@ -55,7 +55,7 @@ protected:
 		int32 OtherBodyIndex
 	);
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* ItemMesh;
 
 	UPROPERTY(VisibleAnywhere)

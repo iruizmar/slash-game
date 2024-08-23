@@ -8,6 +8,7 @@
 #include "Interfaces/Hittable.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Slash/DebugMacros.h"
 
 AWeapon::AWeapon()
 {
@@ -108,4 +109,19 @@ void AWeapon::OnCollisionBoxOverlapBegin(
 	IgnoreActorsOnHit.AddUnique(HitResult.GetActor());
 
 	CreateFields(HitResult.ImpactPoint);
+}
+
+FVector AWeapon::GetLeftHandSocketTarget(USkinnedMeshComponent* CharacterMesh) const
+{
+	const FTransform WeaponLeftHandSocketTransform = ItemMesh->GetSocketTransform(FName("LeftHand"));
+	FVector OutPosition;
+	FRotator OutRotator;
+	CharacterMesh->TransformToBoneSpace(
+		FName("hand_r"),
+		WeaponLeftHandSocketTransform.GetLocation(),
+		FRotator::ZeroRotator,
+		OutPosition,
+		OutRotator
+	);
+	return OutPosition;
 }

@@ -26,6 +26,12 @@ public:
 	void ShowTrail() const;
 	void HideTrail() const;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	bool ShouldUseLeftHandFABRIK = false;
+
+	UFUNCTION(BlueprintCallable)
+	FVector GetLeftHandSocketTarget(USkinnedMeshComponent* CharacterMesh) const;
+
 protected:
 	virtual void BeginPlay() override;
 

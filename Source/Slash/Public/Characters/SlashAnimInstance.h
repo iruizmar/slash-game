@@ -31,6 +31,12 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category=Movement)
 	bool IsFalling = false;
 
-	UPROPERTY(BlueprintReadOnly, Category="Movement | Weapon State")
+	UPROPERTY(BlueprintReadOnly, Category="Weapon")
 	ECharacterWeaponState CharacterWeaponState;
+
+	UPROPERTY(BlueprintReadOnly, Category="Weapon")
+	bool ShouldUseLeftHandFABRIK;
+
+	UPROPERTY(BlueprintReadOnly, Category="Weapon")
+	FVector LeftHandFABRIKTarget;
 };

@@ -119,4 +119,6 @@ private:
 public:
 	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }
 	FORCEINLINE ECharacterWeaponState GetCharacterWeaponState() const { return WeaponState; }
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE AWeapon* GetEquippedWeapon() const { return EquippedWeapon; }
 };

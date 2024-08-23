@@ -26,5 +26,10 @@ void USlashAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		GroundSpeed = UKismetMathLibrary::VSizeXY(CharacterMovement->Velocity);
 		IsFalling = CharacterMovement->IsFalling();
 		CharacterWeaponState = Character->GetCharacterWeaponState();
+		if (const AWeapon* Weapon = Character->GetEquippedWeapon())
+		{
+			ShouldUseLeftHandFABRIK = Weapon->ShouldUseLeftHandFABRIK;
+			LeftHandFABRIKTarget = Weapon->GetLeftHandSocketTarget(Character->GetMesh());
+		}
 	}
 }

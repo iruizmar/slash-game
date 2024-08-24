@@ -8,7 +8,6 @@
 #include "Interfaces/Hittable.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
-#include "Slash/DebugMacros.h"
 
 AWeapon::AWeapon()
 {
@@ -50,6 +49,10 @@ void AWeapon::Equip(USceneComponent* InParent, const FName InSocketName)
 	{
 		Sphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
+}
+
+void AWeapon::Attack() const
+{
 }
 
 void AWeapon::BeginHitting() const
@@ -102,9 +105,9 @@ void AWeapon::OnCollisionBoxOverlapBegin(
 	);
 
 	//Did we hit a hittable?
-	if (const IHittable* Hittable = Cast<IHittable>(HitResult.GetActor()))
+	if (IHittable* Hittable = Cast<IHittable>(HitResult.GetActor()))
 	{
-		Hittable->Execute_GetHit(HitResult.GetActor(), HitResult.ImpactPoint);
+		Hittable->GetHit(HitResult.ImpactPoint);
 	}
 	IgnoreActorsOnHit.AddUnique(HitResult.GetActor());
 

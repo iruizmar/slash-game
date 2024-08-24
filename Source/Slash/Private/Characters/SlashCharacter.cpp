@@ -149,7 +149,9 @@ void ASlashCharacter::ToggleWeapon()
 
 void ASlashCharacter::PlayAttackMontage() const
 {
-	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance(); AnimInstance && AttackMontage)
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	UAnimMontage* AttackMontage = EquippedWeapon->GetAttackMontage();
+	if (AnimInstance && AttackMontage)
 	{
 		FName SectionName;
 		AnimInstance->Montage_Play(AttackMontage);
@@ -168,7 +170,9 @@ void ASlashCharacter::PlayAttackMontage() const
 
 void ASlashCharacter::PlaySheatheUnsheatheMontage(const FName SectionName) const
 {
-	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance(); AnimInstance && SheatheUnsheatheMontage)
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	UAnimMontage* SheatheUnsheatheMontage = EquippedWeapon->GetSheatheUnsheatheMontage();
+	if (AnimInstance && SheatheUnsheatheMontage)
 	{
 		AnimInstance->Montage_Play(SheatheUnsheatheMontage);
 		AnimInstance->Montage_JumpToSection(SectionName, SheatheUnsheatheMontage);

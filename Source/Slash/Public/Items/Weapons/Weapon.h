@@ -21,6 +21,7 @@ public:
 	AWeapon();
 	void AttachMeshToSocket(USceneComponent* InParent, FName InSocketName) const;
 	void Equip(USceneComponent* InParent, FName InSocketName);
+	void Attack() const;
 	void BeginHitting() const;
 	void EndHitting();
 	void ShowTrail() const;
@@ -41,6 +42,13 @@ protected:
 private:
 	UPROPERTY(EditAnywhere, Category = "Weapon")
 	USoundBase* PickSound = nullptr;
+
+	//section Animation montages
+	UPROPERTY(EditDefaultsOnly, Category = "Montages")
+	UAnimMontage* AttackMontage = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Montages")
+	UAnimMontage* SheatheUnsheatheMontage = nullptr;
 
 	UPROPERTY(VisibleAnywhere)
 	UBoxComponent* CollisionBox;
@@ -65,4 +73,8 @@ private:
 	);
 
 	TArray<AActor*> IgnoreActorsOnHit;
+
+public:
+	FORCEINLINE UAnimMontage* GetAttackMontage() const { return AttackMontage; }
+	FORCEINLINE UAnimMontage* GetSheatheUnsheatheMontage() const { return SheatheUnsheatheMontage; }
 };

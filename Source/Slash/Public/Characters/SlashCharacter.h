@@ -64,13 +64,6 @@ protected:
 	void Attack();
 	void ToggleWeapon();
 
-	//section Animation montages
-	UPROPERTY(EditDefaultsOnly, Category = Montages)
-	UAnimMontage* AttackMontage = nullptr;
-
-	UPROPERTY(EditDefaultsOnly, Category = Montages)
-	UAnimMontage* SheatheUnsheatheMontage = nullptr;
-
 private:
 	UPROPERTY(VisibleInstanceOnly, Category = State)
 	ECharacterWeaponState WeaponState = ECharacterWeaponState::ECWS_Unequipped;
@@ -119,6 +112,5 @@ private:
 public:
 	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }
 	FORCEINLINE ECharacterWeaponState GetCharacterWeaponState() const { return WeaponState; }
-	UFUNCTION(BlueprintCallable)
 	FORCEINLINE AWeapon* GetEquippedWeapon() const { return EquippedWeapon; }
 };

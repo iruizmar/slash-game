@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Item.generated.h"
 
+class UNiagaraComponent;
 class USphereComponent;
 
 enum class EItemState: uint8
@@ -60,6 +61,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	USphereComponent* Sphere;
+
+	UPROPERTY(VisibleAnywhere)
+	UNiagaraComponent* EmbersEffect;
 
 private:
 	void Float();

@@ -3,6 +3,7 @@
 
 #include "Items/Weapons/Weapon.h"
 
+#include "NiagaraComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "Interfaces/Hittable.h"
@@ -49,6 +50,7 @@ void AWeapon::Equip(USceneComponent* InParent, const FName InSocketName)
 	{
 		Sphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
+	EmbersEffect->Deactivate();
 }
 
 void AWeapon::BeginHitting() const

@@ -32,7 +32,7 @@ protected:
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Breakable properties")
-	TSubclassOf<ATreasure> ToSpawn;
+	TArray<TSubclassOf<ATreasure>> ToSpawn;
 
 	UPROPERTY(EditAnywhere, Category = "Sound")
 	USoundBase* BreakSound;

@@ -51,10 +51,6 @@ void AWeapon::Equip(USceneComponent* InParent, const FName InSocketName)
 	}
 }
 
-void AWeapon::Attack() const
-{
-}
-
 void AWeapon::BeginHitting() const
 {
 	if (!CollisionBox) { return; }
@@ -108,10 +104,10 @@ void AWeapon::OnCollisionBoxOverlapBegin(
 	if (IHittable* Hittable = Cast<IHittable>(HitResult.GetActor()))
 	{
 		Hittable->GetHit(HitResult.ImpactPoint);
-	}
-	IgnoreActorsOnHit.AddUnique(HitResult.GetActor());
+		IgnoreActorsOnHit.AddUnique(HitResult.GetActor());
 
-	CreateFields(HitResult.ImpactPoint);
+		CreateFields(HitResult.ImpactPoint);
+	}
 }
 
 FVector AWeapon::GetLeftHandSocketTarget(USkinnedMeshComponent* CharacterMesh) const

@@ -21,7 +21,6 @@ public:
 	AWeapon();
 	void AttachMeshToSocket(USceneComponent* InParent, FName InSocketName) const;
 	void Equip(USceneComponent* InParent, FName InSocketName);
-	void Attack() const;
 	void BeginHitting() const;
 	void EndHitting();
 	void ShowTrail() const;

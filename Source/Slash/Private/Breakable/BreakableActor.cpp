@@ -43,12 +43,15 @@ void ABreakableActor::GetHit(const FVector& ImpactPoint)
 
 void ABreakableActor::OnBreak(const FChaosBreakEvent& BreakEvent)
 {
+	if (BreakEvent.Index != 1) { return; }
 	Capsule->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
-	if (UWorld* World = GetWorld(); World)
+	if (UWorld* World = GetWorld(); World && ToSpawn.Num() > 0)
 	{
 		FVector Location = GetActorLocation();
 		Location.Z += 75.f;
-		World->SpawnActor<ATreasure>(ToSpawn, Location, GetActorRotation());
+
+		const int32 Selection = FMath::RandRange(0, ToSpawn.Num() - 1);
+		World->SpawnActor<ATreasure>(ToSpawn[Selection], Location, GetActorRotation());
 	}
 	if (BreakSound)
 	{

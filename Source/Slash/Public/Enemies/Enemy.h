@@ -7,6 +7,9 @@
 #include "Interfaces/Hittable.h"
 #include "Enemy.generated.h"
 
+class UStatsComponent;
+class UUStatsComponent;
+
 UCLASS()
 class SLASH_API AEnemy : public ACharacter, public IHittable
 {
@@ -29,6 +32,9 @@ protected:
 	void PlayHitReactMontage(const EHitDirection Direction) const;
 
 private:
+	UPROPERTY(VisibleAnywhere, Category="Stats")
+	UStatsComponent* StatsComponent = nullptr;
+
 	UPROPERTY(EditDefaultsOnly, Category="Montages")
 	UAnimMontage* HitReactMontage = nullptr;
 

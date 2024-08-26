@@ -7,6 +7,8 @@
 #include "Interfaces/Hittable.h"
 #include "Enemy.generated.h"
 
+class UWidgetComponent;
+class UHealthBarComponent;
 class UStatsComponent;
 class UUStatsComponent;
 
@@ -34,6 +36,9 @@ protected:
 private:
 	UPROPERTY(VisibleAnywhere, Category="Stats")
 	UStatsComponent* StatsComponent = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category="Stats")
+	UHealthBarComponent* HealthBarWidget = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Category="Montages")
 	UAnimMontage* HitReactMontage = nullptr;

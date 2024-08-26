@@ -5,6 +5,7 @@
 
 #include "Components/CapsuleComponent.h"
 #include "Components/StatsComponent.h"
+#include "HUD/HealthBarComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 AEnemy::AEnemy()
@@ -18,11 +19,19 @@ AEnemy::AEnemy()
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 
 	StatsComponent = CreateDefaultSubobject<UStatsComponent>(TEXT("Stats"));
+
+	HealthBarWidget = CreateDefaultSubobject<UHealthBarComponent>(TEXT("Health Bar"));
+	HealthBarWidget->SetupAttachment(GetRootComponent());
 }
 
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (HealthBarWidget)
+	{
+		HealthBarWidget->SetHealthPercentage(1.f);
+	}
 }
 
 void AEnemy::Tick(float DeltaTime)

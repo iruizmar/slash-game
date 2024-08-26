@@ -108,10 +108,6 @@ void AWeapon::OnCollisionBoxOverlapBegin(
 	//Did we hit a hittable?
 	if (IHittable* Hittable = Cast<IHittable>(HitResult.GetActor()))
 	{
-		Hittable->GetHit(HitResult.ImpactPoint);
-		IgnoreActorsOnHit.AddUnique(HitResult.GetActor());
-
-		CreateFields(HitResult.ImpactPoint);
 		UGameplayStatics::ApplyDamage(
 			HitResult.GetActor(),
 			Damage,
@@ -119,6 +115,10 @@ void AWeapon::OnCollisionBoxOverlapBegin(
 			this,
 			UDamageType::StaticClass()
 		);
+
+		Hittable->GetHit(HitResult.ImpactPoint);
+		IgnoreActorsOnHit.AddUnique(HitResult.GetActor());
+		CreateFields(HitResult.ImpactPoint);
 	}
 }
 

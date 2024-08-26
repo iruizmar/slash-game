@@ -3,10 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Characters/CharacterTypes.h"
 #include "GameFramework/Character.h"
 #include "Interfaces/Hittable.h"
 #include "Enemy.generated.h"
 
+class USphereComponent;
 class UWidgetComponent;
 class UHealthBarComponent;
 class UStatsComponent;
@@ -33,7 +35,8 @@ protected:
 		EHD_Front, EHD_Back, EHD_Right, EHD_Left
 	};
 
-	void PlayHitReactMontage(const EHitDirection Direction) const;
+	UPROPERTY(BlueprintReadOnly)
+	EDeathPose DeathPose = EDeathPose::EDP_Alive;
 
 private:
 	UPROPERTY(VisibleAnywhere, Category="Stats")
@@ -42,8 +45,14 @@ private:
 	UPROPERTY(VisibleAnywhere, Category="Stats")
 	UHealthBarComponent* HealthBarWidget = nullptr;
 
+	UPROPERTY(VisibleAnywhere, Category = "AI")
+	USphereComponent* VisibilityRadius = nullptr;
+
 	UPROPERTY(EditDefaultsOnly, Category="Montages")
 	UAnimMontage* HitReactMontage = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category="Montages")
+	UAnimMontage* DeathMontage = nullptr;
 
 	UPROPERTY(EditAnywhere, Category="Sound")
 	USoundBase* HitSound = nullptr;
@@ -51,7 +60,32 @@ private:
 	UPROPERTY(EditAnywhere, Category="VFX")
 	UParticleSystem* BloodParticle = nullptr;
 
+	UPROPERTY()
+	AActor* CombatTarget = nullptr;
+
 	void PlayHitSound(const FVector& ImpactPoint) const;
 	void PlayHitAnimation(const FVector& ImpactPoint) const;
 	void SpawnBloodEmitter(const FVector& ImpactPoint) const;
+	void Die();
+
+
+	void PlayHitReactMontage(const EHitDirection Direction) const;
+	void PlayDeathMontage();
+
+	UFUNCTION()
+	void OnVisibilitySphereCollisionOverlapBegins(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex,
+		bool bFromSweep,
+		const FHitResult& SweepResult
+	);
+	UFUNCTION()
+	void OnVisibilitySphereCollisionOverlapEnd(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex
+	);
 };

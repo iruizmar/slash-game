@@ -3,7 +3,9 @@
 
 #include "Enemies/Enemy.h"
 
+#include "Characters/SlashCharacter.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/SphereComponent.h"
 #include "Components/StatsComponent.h"
 #include "HUD/HealthBarComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -22,11 +24,22 @@ AEnemy::AEnemy()
 
 	HealthBarWidget = CreateDefaultSubobject<UHealthBarComponent>(TEXT("Health Bar"));
 	HealthBarWidget->SetupAttachment(GetRootComponent());
+
+	VisibilityRadius = CreateDefaultSubobject<USphereComponent>(TEXT("Visibility radius"));
+	VisibilityRadius->SetupAttachment(GetRootComponent());
+	VisibilityRadius->SetCollisionEnabled(ECollisionEnabled::Type::QueryOnly);
+	VisibilityRadius->SetCollisionResponseToAllChannels(ECR_Ignore);
+	VisibilityRadius->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	VisibilityRadius->SetSphereRadius(500.f);
 }
 
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+
+	HealthBarWidget->SetVisibility(false);
+	VisibilityRadius->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnVisibilitySphereCollisionOverlapBegins);
+	VisibilityRadius->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnVisibilitySphereCollisionOverlapEnd);
 }
 
 void AEnemy::Tick(float DeltaTime)
@@ -41,7 +54,10 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AEnemy::GetHit(const FVector& ImpactPoint)
 {
-	PlayHitAnimation(ImpactPoint);
+	if (StatsComponent->GetIsAlive())
+	{
+		PlayHitAnimation(ImpactPoint);
+	}
 	PlayHitSound(ImpactPoint);
 	SpawnBloodEmitter(ImpactPoint);
 }
@@ -50,9 +66,12 @@ float AEnemy::TakeDamage(float Damage, const FDamageEvent& DamageEvent, AControl
                          AActor* DamageCauser)
 {
 	StatsComponent->ReceiveDamage(Damage);
-	if (HealthBarWidget)
+	HealthBarWidget->SetVisibility(true);
+	HealthBarWidget->SetHealthPercentage(StatsComponent->GetHealthPercentage());
+	CombatTarget = EventInstigator->GetPawn();
+	if (!StatsComponent->GetIsAlive())
 	{
-		HealthBarWidget->SetHealthPercentage(StatsComponent->GetHealthPercentage());
+		Die();
 	}
 
 	return Damage;
@@ -94,6 +113,14 @@ void AEnemy::SpawnBloodEmitter(const FVector& ImpactPoint) const
 	}
 }
 
+void AEnemy::Die()
+{
+	PlayDeathMontage();
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+	HealthBarWidget->SetVisibility(false);
+	SetLifeSpan(15.f);
+}
+
 
 void AEnemy::PlayHitReactMontage(const EHitDirection Direction) const
 {
@@ -127,4 +154,62 @@ void AEnemy::PlayHitSound(const FVector& ImpactPoint) const
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, HitSound, ImpactPoint);
 	}
+}
+
+void AEnemy::PlayDeathMontage()
+{
+	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance(); AnimInstance && DeathMontage)
+	{
+		AnimInstance->Montage_Play(DeathMontage);
+
+		const int32 Selection = FMath::RandRange(0, 5);
+		FName SectionName;
+		switch (Selection)
+		{
+		case 0:
+			SectionName = FName("Death1");
+			DeathPose = EDeathPose::EDP_Death1;
+			break;
+
+		case 1:
+			SectionName = FName("Death2");
+			DeathPose = EDeathPose::EDP_Death2;
+			break;
+
+		case 2:
+			SectionName = FName("Death3");
+			DeathPose = EDeathPose::EDP_Death3;
+			break;
+
+		case 3:
+			SectionName = FName("Death4");
+			DeathPose = EDeathPose::EDP_Death4;
+			break;
+		default:
+			SectionName = FName("Death5");
+			DeathPose = EDeathPose::EDP_Death5;
+			break;
+		}
+		AnimInstance->Montage_JumpToSection(SectionName, DeathMontage);
+	}
+}
+
+void AEnemy::OnVisibilitySphereCollisionOverlapBegins(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                                      UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+                                                      bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (ASlashCharacter* Character = Cast<ASlashCharacter>(OtherActor); !Character) { return; }
+
+	if (StatsComponent->GetHealthPercentage() < 1.f)
+	{
+		HealthBarWidget->SetVisibility(true);
+	}
+}
+
+void AEnemy::OnVisibilitySphereCollisionOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                                   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (ASlashCharacter* Character = Cast<ASlashCharacter>(OtherActor); !Character) { return; }
+
+	HealthBarWidget->SetVisibility(false);
 }

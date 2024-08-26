@@ -24,6 +24,11 @@ float UStatsComponent::GetHealthPercentage() const
 	return Health / MaxHealth;
 }
 
+bool UStatsComponent::GetIsAlive() const
+{
+	return Health > 0.f;
+}
+
 
 void UStatsComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {

@@ -95,7 +95,7 @@ void AWeapon::OnCollisionBoxOverlapBegin(
 		this,
 		HitTraceStartPoint->GetComponentLocation(),
 		HitTraceEndPoint->GetComponentLocation(),
-		FVector(5.f, 5.f, 5.f),
+		FVector(20.f, 20.f, 20.f),
 		HitTraceStartPoint->GetComponentRotation(),
 		TraceTypeQuery1,
 		false,

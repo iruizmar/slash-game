@@ -22,6 +22,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void GetHit(const FVector& ImpactPoint) override;
+	virtual float TakeDamage(float Damage, const FDamageEvent& DamageEvent, AController* EventInstigator,
+	                         AActor* DamageCauser) override;
 
 protected:
 	virtual void BeginPlay() override;

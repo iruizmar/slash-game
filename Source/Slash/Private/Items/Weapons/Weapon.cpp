@@ -38,8 +38,11 @@ void AWeapon::AttachMeshToSocket(USceneComponent* InParent, const FName InSocket
 	ItemMesh->AttachToComponent(InParent, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), InSocketName);
 }
 
-void AWeapon::Equip(USceneComponent* InParent, const FName InSocketName)
+void AWeapon::Equip(USceneComponent* InParent, const FName InSocketName, AActor* InOwner,
+                    APawn* InInstigator)
 {
+	SetOwner(InOwner);
+	SetInstigator(InInstigator);
 	AttachMeshToSocket(InParent, InSocketName);
 	State = EItemState::EIS_Equiped;
 	if (PickSound)
@@ -109,6 +112,13 @@ void AWeapon::OnCollisionBoxOverlapBegin(
 		IgnoreActorsOnHit.AddUnique(HitResult.GetActor());
 
 		CreateFields(HitResult.ImpactPoint);
+		UGameplayStatics::ApplyDamage(
+			HitResult.GetActor(),
+			Damage,
+			GetInstigator()->GetController(),
+			this,
+			UDamageType::StaticClass()
+		);
 	}
 }
 

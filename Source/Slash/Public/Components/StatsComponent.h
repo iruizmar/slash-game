@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <ThirdParty/hlslcc/hlslcc/src/hlslcc_lib/compiler.h>
+
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "StatsComponent.generated.h"
@@ -26,4 +28,8 @@ private:
 
 	UPROPERTY(EditAnywhere, Category= "Stats")
 	float Health = MaxHealth;
+
+public:
+	void ReceiveDamage(const float Damage);
+	float GetHealthPercentage() const;
 };

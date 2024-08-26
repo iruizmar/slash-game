@@ -11,6 +11,7 @@
 #include "GroomComponent.h"
 #include "Items/Item.h"
 #include "Items/Weapons/Weapon.h"
+#include "Items/Weapons/WeaponTypes.h"
 
 ASlashCharacter::ASlashCharacter()
 {
@@ -113,8 +114,10 @@ void ASlashCharacter::Interact()
 {
 	if (AWeapon* OverlappingWeapon = Cast<AWeapon>(OverlappingItem))
 	{
-		OverlappingWeapon->Equip(GetMesh(), FName("hand_rSocket"));
-		WeaponState = ECharacterWeaponState::ECWS_OneHandedWeapon;
+		OverlappingWeapon->Equip(GetMesh(), FName("hand_rSocket"), this, this);
+		OverlappingWeapon->SetOwner(this);
+		OverlappingWeapon->SetInstigator(this);
+		WeaponState = GetCharacterWeaponStateByWeaponType(OverlappingWeapon->Type);
 		EquippedWeapon = OverlappingWeapon;
 		OverlappingItem = nullptr;
 	}
@@ -136,13 +139,13 @@ void ASlashCharacter::ToggleWeapon()
 	ActionState = ECharacterActionState::ECAS_SheathingOrUnSheathing;
 	switch (WeaponState)
 	{
-	case ECharacterWeaponState::ECWS_OneHandedWeapon:
-		WeaponState = ECharacterWeaponState::ECWS_Unequipped;
-		PlaySheatheUnsheatheMontage(FName("Sheathe"));
+	case ECharacterWeaponState::ECWS_Unequipped:
+		WeaponState = GetCharacterWeaponStateByWeaponType(EquippedWeapon->Type);
+		PlaySheatheUnsheatheMontage(FName("Unsheathe"));
 		break;
 	default:
-		WeaponState = ECharacterWeaponState::ECWS_OneHandedWeapon;
-		PlaySheatheUnsheatheMontage(FName("Unsheathe"));
+		WeaponState = ECharacterWeaponState::ECWS_Unequipped;
+		PlaySheatheUnsheatheMontage(FName("Sheathe"));
 		break;
 	}
 }
@@ -223,4 +226,19 @@ void ASlashCharacter::HideWeaponTrail() const
 {
 	if (!EquippedWeapon) { return; }
 	EquippedWeapon->HideTrail();
+}
+
+ECharacterWeaponState ASlashCharacter::GetCharacterWeaponStateByWeaponType(const EWeaponType WeaponType)
+{
+	ECharacterWeaponState State;
+	switch (WeaponType)
+	{
+	case EWeaponType::EWT_LongSword:
+		State = ECharacterWeaponState::ECWS_LongSword;
+		break;
+	default:
+		State = ECharacterWeaponState::ECWS_ShortSword;
+		break;
+	}
+	return State;
 }

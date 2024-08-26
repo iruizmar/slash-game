@@ -20,7 +20,7 @@ class SLASH_API AWeapon : public AItem
 public:
 	AWeapon();
 	void AttachMeshToSocket(USceneComponent* InParent, FName InSocketName) const;
-	void Equip(USceneComponent* InParent, FName InSocketName);
+	void Equip(USceneComponent* InParent, FName InSocketName, AActor* InOwner, APawn* InInstigator);
 	void BeginHitting() const;
 	void EndHitting();
 	void ShowTrail() const;
@@ -41,6 +41,9 @@ protected:
 private:
 	UPROPERTY(EditAnywhere, Category = "Weapon")
 	USoundBase* PickSound = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	float Damage = 20.f;
 
 	//section Animation montages
 	UPROPERTY(EditDefaultsOnly, Category = "Montages")

@@ -38,6 +38,12 @@ void AWeapon::AttachMeshToSocket(USceneComponent* InParent, const FName InSocket
 	ItemMesh->AttachToComponent(InParent, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), InSocketName);
 }
 
+void AWeapon::DetachFromSocket()
+{
+	ItemMesh->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, false));
+	SetActorRotation(FRotator(0.f, 0.f, -90.f));
+}
+
 void AWeapon::Equip(USceneComponent* InParent, const FName InSocketName, AActor* InOwner,
                     APawn* InInstigator)
 {
@@ -51,9 +57,23 @@ void AWeapon::Equip(USceneComponent* InParent, const FName InSocketName, AActor*
 	}
 	if (Sphere)
 	{
-		Sphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		Sphere->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
 	}
 	EmbersEffect->Deactivate();
+}
+
+void AWeapon::UnEquip()
+{
+	SetOwner(nullptr);
+	SetInstigator(nullptr);
+	EmbersEffect->Activate();
+	if (Sphere)
+	{
+		Sphere->SetCollisionEnabled(ECollisionEnabled::Type::QueryOnly);
+	}
+	State = EItemState::EIS_Floating;
+
+	DetachFromSocket();
 }
 
 void AWeapon::BeginHitting() const

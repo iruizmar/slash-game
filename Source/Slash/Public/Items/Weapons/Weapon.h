@@ -20,7 +20,9 @@ class SLASH_API AWeapon : public AItem
 public:
 	AWeapon();
 	void AttachMeshToSocket(USceneComponent* InParent, FName InSocketName) const;
+	void DetachFromSocket();
 	void Equip(USceneComponent* InParent, FName InSocketName, AActor* InOwner, APawn* InInstigator);
+	void UnEquip();
 	void BeginHitting() const;
 	void EndHitting();
 	void ShowTrail() const;

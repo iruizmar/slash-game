@@ -114,9 +114,11 @@ void ASlashCharacter::Interact()
 {
 	if (AWeapon* OverlappingWeapon = Cast<AWeapon>(OverlappingItem))
 	{
+		if (EquippedWeapon)
+		{
+			EquippedWeapon->UnEquip();
+		}
 		OverlappingWeapon->Equip(GetMesh(), FName("hand_rSocket"), this, this);
-		OverlappingWeapon->SetOwner(this);
-		OverlappingWeapon->SetInstigator(this);
 		WeaponState = GetCharacterWeaponStateByWeaponType(OverlappingWeapon->Type);
 		EquippedWeapon = OverlappingWeapon;
 		OverlappingItem = nullptr;

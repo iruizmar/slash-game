@@ -11,11 +11,17 @@
 #include "HUD/HealthBarComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Navigation/PathFollowingComponent.h"
+#include "Perception/PawnSensingComponent.h"
 #include "Runtime/AIModule/Classes/AIController.h"
 
 AEnemy::AEnemy()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationRoll = false;
 
 	GetMesh()->SetCollisionObjectType(ECC_WorldDynamic);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
@@ -26,12 +32,6 @@ AEnemy::AEnemy()
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->MaxWalkSpeed = 300.f;
-
-	bUseControllerRotationYaw = false;
-	bUseControllerRotationPitch = false;
-	bUseControllerRotationRoll = false;
-
-	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 	StatsComponent = CreateDefaultSubobject<UStatsComponent>(TEXT("Stats"));
 
@@ -44,6 +44,10 @@ AEnemy::AEnemy()
 	VisibilityRadius->SetCollisionResponseToAllChannels(ECR_Ignore);
 	VisibilityRadius->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 	VisibilityRadius->SetSphereRadius(500.f);
+
+	PawnSensingComponent = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("Pawn sensing"));
+	PawnSensingComponent->SightRadius = 4000.f;
+	PawnSensingComponent->SetPeripheralVisionAngle(45.f);
 }
 
 void AEnemy::BeginPlay()
@@ -53,6 +57,8 @@ void AEnemy::BeginPlay()
 	HealthBarWidget->SetVisibility(false);
 	VisibilityRadius->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnVisibilitySphereCollisionOverlapBegins);
 	VisibilityRadius->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnVisibilitySphereCollisionOverlapEnd);
+
+	PawnSensingComponent->OnSeePawn.AddDynamic(this, &AEnemy::OnSeePawn);
 
 	if (AAIController* AIController = Cast<AAIController>(GetController()))
 	{
@@ -203,35 +209,9 @@ void AEnemy::PlayDeathMontage()
 	{
 		AnimInstance->Montage_Play(DeathMontage);
 
-		const int32 Selection = FMath::RandRange(0, 5);
-		FName SectionName;
-		switch (Selection)
-		{
-		case 0:
-			SectionName = FName("Death1");
-			DeathPose = EDeathPose::EDP_Death1;
-			break;
-
-		case 1:
-			SectionName = FName("Death2");
-			DeathPose = EDeathPose::EDP_Death2;
-			break;
-
-		case 2:
-			SectionName = FName("Death3");
-			DeathPose = EDeathPose::EDP_Death3;
-			break;
-
-		case 3:
-			SectionName = FName("Death4");
-			DeathPose = EDeathPose::EDP_Death4;
-			break;
-		default:
-			SectionName = FName("Death5");
-			DeathPose = EDeathPose::EDP_Death5;
-			break;
-		}
-		AnimInstance->Montage_JumpToSection(SectionName, DeathMontage);
+		const int32 Selection = FMath::RandRange(1, 5);
+		const FString SectionName = FString::Printf(TEXT("Death%d"), Selection);
+		AnimInstance->Montage_JumpToSection(*SectionName, DeathMontage);
 	}
 }
 
@@ -253,6 +233,14 @@ void AEnemy::OnVisibilitySphereCollisionOverlapEnd(UPrimitiveComponent* Overlapp
 	if (ASlashCharacter* Character = Cast<ASlashCharacter>(OtherActor); !Character) { return; }
 
 	HealthBarWidget->SetVisibility(false);
+}
+
+void AEnemy::OnSeePawn(APawn* Pawn)
+{
+	// if (ASlashCharacter* Character = Cast<ASlashCharacter>(Pawn->GetController()))
+	// {
+	UE_LOG(LogTemp, Warning, TEXT("Pawn seen"));
+	// }
 }
 
 bool AEnemy::IsActorInRange(const AActor* InActor, const double AcceptanceRadius) const

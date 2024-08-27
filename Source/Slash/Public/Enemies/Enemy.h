@@ -8,6 +8,7 @@
 #include "Interfaces/Hittable.h"
 #include "Enemy.generated.h"
 
+class UPawnSensingComponent;
 class USphereComponent;
 class UWidgetComponent;
 class UHealthBarComponent;
@@ -38,15 +39,10 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	enum class EHitDirection: uint8
-	{
-		EHD_Front, EHD_Back, EHD_Right, EHD_Left
-	};
-
-	UPROPERTY(BlueprintReadOnly)
-	EDeathPose DeathPose = EDeathPose::EDP_Alive;
-
 private:
+	/**
+	* Components
+	*/
 	UPROPERTY(VisibleAnywhere, Category="Stats")
 	UStatsComponent* StatsComponent = nullptr;
 
@@ -55,6 +51,10 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "AI")
 	USphereComponent* VisibilityRadius = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "AI")
+	UPawnSensingComponent* PawnSensingComponent = nullptr;
+
 
 	UPROPERTY(EditDefaultsOnly, Category="Montages")
 	UAnimMontage* HitReactMontage = nullptr;
@@ -95,6 +95,11 @@ private:
 	void Die();
 
 
+	enum class EHitDirection: uint8
+	{
+		EHD_Front, EHD_Back, EHD_Right, EHD_Left
+	};
+
 	void PlayHitReactMontage(const EHitDirection Direction) const;
 	void PlayDeathMontage();
 
@@ -115,6 +120,9 @@ private:
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex
 	);
+
+	UFUNCTION()
+	void OnSeePawn(APawn* Pawn);
 
 	UFUNCTION()
 	bool IsActorInRange(const AActor* InActor, double AcceptanceRadius) const;

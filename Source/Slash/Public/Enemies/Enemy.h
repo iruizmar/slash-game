@@ -31,6 +31,10 @@ public:
 	UPROPERTY(EditAnywhere)
 	double PatrolRadius = 150.f;
 
+	UPROPERTY()
+	FTimerHandle PatrolTimer;
+	void OnPatrolTimerFinish() const;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -70,14 +74,20 @@ private:
 	UPROPERTY()
 	AActor* CombatTarget = nullptr;
 
-	UPROPERTY(VisibleInstanceOnly, Category="AI")
+	UPROPERTY(VisibleInstanceOnly, Category = "AI")
 	AActor* CurrentPatrolTarget = nullptr;
 
 	UPROPERTY()
 	int32 CurrentPatrolTargetIndex = 0;
 
-	UPROPERTY(EditInstanceOnly, Category="AI")
+	UPROPERTY(EditInstanceOnly, Category = "AI")
 	TArray<AActor*> PatrolTargets;
+
+	UPROPERTY(EditAnywhere, Category = "AI")
+	float PatrolWaitMin = 5.f;
+
+	UPROPERTY(EditAnywhere, Category = "AI")
+	float PatrolWaitMax = 10.f;
 
 	void PlayHitSound(const FVector& ImpactPoint) const;
 	void PlayHitAnimation(const FVector& ImpactPoint) const;

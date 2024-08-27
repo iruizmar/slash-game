@@ -66,6 +66,11 @@ void AEnemy::BeginPlay()
 	}
 }
 
+void AEnemy::OnPatrolTimerFinish() const
+{
+	MoveToActor(CurrentPatrolTarget);
+}
+
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -78,7 +83,8 @@ void AEnemy::Tick(float DeltaTime)
 	{
 		CurrentPatrolTargetIndex = (CurrentPatrolTargetIndex + 1) % PatrolTargets.Num();
 		CurrentPatrolTarget = PatrolTargets[CurrentPatrolTargetIndex];
-		MoveToActor(CurrentPatrolTarget);
+		GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemy::OnPatrolTimerFinish,
+		                                FMath::RandRange(PatrolWaitMin, PatrolWaitMax));
 	}
 }
 
@@ -251,12 +257,14 @@ void AEnemy::OnVisibilitySphereCollisionOverlapEnd(UPrimitiveComponent* Overlapp
 
 bool AEnemy::IsActorInRange(const AActor* InActor, const double AcceptanceRadius) const
 {
+	if (InActor == nullptr) { return false; }
 	const double Distance = (InActor->GetActorLocation() - GetActorLocation()).Size();
 	return Distance <= AcceptanceRadius;
 }
 
 void AEnemy::MoveToActor(const AActor* InActor) const
 {
+	if (InActor == nullptr) { return; }
 	FAIMoveRequest MoveRequest;
 	MoveRequest.SetGoalActor(InActor);
 	MoveRequest.SetAcceptanceRadius(15.f);

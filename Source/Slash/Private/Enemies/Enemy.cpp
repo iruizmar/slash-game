@@ -7,8 +7,11 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/StatsComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "HUD/HealthBarComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Navigation/PathFollowingComponent.h"
+#include "Runtime/AIModule/Classes/AIController.h"
 
 AEnemy::AEnemy()
 {
@@ -18,7 +21,17 @@ AEnemy::AEnemy()
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	GetMesh()->SetGenerateOverlapEvents(true);
+
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->MaxWalkSpeed = 300.f;
+
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationRoll = false;
+
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 	StatsComponent = CreateDefaultSubobject<UStatsComponent>(TEXT("Stats"));
 
@@ -40,11 +53,33 @@ void AEnemy::BeginPlay()
 	HealthBarWidget->SetVisibility(false);
 	VisibilityRadius->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnVisibilitySphereCollisionOverlapBegins);
 	VisibilityRadius->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnVisibilitySphereCollisionOverlapEnd);
+
+	if (AAIController* AIController = Cast<AAIController>(GetController()))
+	{
+		EnemyController = AIController;
+		if (!PatrolTargets.IsEmpty())
+		{
+			CurrentPatrolTargetIndex = 0;
+			CurrentPatrolTarget = PatrolTargets[CurrentPatrolTargetIndex];
+			MoveToActor(CurrentPatrolTarget);
+		}
+	}
 }
 
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (
+		EnemyController &&
+		CurrentPatrolTarget &&
+		PatrolTargets.Num() > 0 &&
+		IsActorInRange(CurrentPatrolTarget, PatrolRadius)
+	)
+	{
+		CurrentPatrolTargetIndex = (CurrentPatrolTargetIndex + 1) % PatrolTargets.Num();
+		CurrentPatrolTarget = PatrolTargets[CurrentPatrolTargetIndex];
+		MoveToActor(CurrentPatrolTarget);
+	}
 }
 
 void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -212,4 +247,18 @@ void AEnemy::OnVisibilitySphereCollisionOverlapEnd(UPrimitiveComponent* Overlapp
 	if (ASlashCharacter* Character = Cast<ASlashCharacter>(OtherActor); !Character) { return; }
 
 	HealthBarWidget->SetVisibility(false);
+}
+
+bool AEnemy::IsActorInRange(const AActor* InActor, const double AcceptanceRadius) const
+{
+	const double Distance = (InActor->GetActorLocation() - GetActorLocation()).Size();
+	return Distance <= AcceptanceRadius;
+}
+
+void AEnemy::MoveToActor(const AActor* InActor) const
+{
+	FAIMoveRequest MoveRequest;
+	MoveRequest.SetGoalActor(InActor);
+	MoveRequest.SetAcceptanceRadius(15.f);
+	EnemyController->MoveTo(MoveRequest);
 }

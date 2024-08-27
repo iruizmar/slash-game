@@ -11,7 +11,7 @@ public class Slash : ModuleRules
 		PublicDependencyModuleNames.AddRange(new[]
 		{
 			"Core", "CoreUObject", "Engine", "InputCore", "HairStrandsCore", "Niagara", "GeometryCollectionEngine",
-			"UMG"
+			"UMG", "AIModule"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new[] { "EnhancedInput" });

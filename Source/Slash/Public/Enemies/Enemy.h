@@ -13,6 +13,7 @@ class UWidgetComponent;
 class UHealthBarComponent;
 class UStatsComponent;
 class UUStatsComponent;
+class AAIController;
 
 UCLASS()
 class SLASH_API AEnemy : public ACharacter, public IHittable
@@ -26,6 +27,9 @@ public:
 	virtual void GetHit(const FVector& ImpactPoint) override;
 	virtual float TakeDamage(float Damage, const FDamageEvent& DamageEvent, AController* EventInstigator,
 	                         AActor* DamageCauser) override;
+
+	UPROPERTY(EditAnywhere)
+	double PatrolRadius = 150.f;
 
 protected:
 	virtual void BeginPlay() override;
@@ -61,7 +65,19 @@ private:
 	UParticleSystem* BloodParticle = nullptr;
 
 	UPROPERTY()
+	AAIController* EnemyController = nullptr;
+
+	UPROPERTY()
 	AActor* CombatTarget = nullptr;
+
+	UPROPERTY(VisibleInstanceOnly, Category="AI")
+	AActor* CurrentPatrolTarget = nullptr;
+
+	UPROPERTY()
+	int32 CurrentPatrolTargetIndex = 0;
+
+	UPROPERTY(EditInstanceOnly, Category="AI")
+	TArray<AActor*> PatrolTargets;
 
 	void PlayHitSound(const FVector& ImpactPoint) const;
 	void PlayHitAnimation(const FVector& ImpactPoint) const;
@@ -81,6 +97,7 @@ private:
 		bool bFromSweep,
 		const FHitResult& SweepResult
 	);
+
 	UFUNCTION()
 	void OnVisibilitySphereCollisionOverlapEnd(
 		UPrimitiveComponent* OverlappedComponent,
@@ -88,4 +105,10 @@ private:
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex
 	);
+
+	UFUNCTION()
+	bool IsActorInRange(const AActor* InActor, double AcceptanceRadius) const;
+
+	UFUNCTION()
+	void MoveToActor(const AActor* InActor) const;
 };
